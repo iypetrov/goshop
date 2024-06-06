@@ -13,6 +13,26 @@ import (
 	"net/http"
 )
 
+func createAuthToken(w http.ResponseWriter, r *http.Request, response map[string]interface{}) error {
+	_, token, err := GetTokenAuth().Encode(response)
+	if err != nil {
+		return err
+	}
+
+	session, err := GetStore().Get(r, "AUTH_SESSION")
+	if err != nil {
+		return err
+	}
+
+	session.Values["token"] = token
+
+	if err := session.Save(r, w); err != nil {
+		return fmt.Errorf("failed to save session: %w", err)
+	}
+
+	return nil
+}
+
 func Provider(w http.ResponseWriter, r *http.Request) error {
 	provider := chi.URLParam(r, "provider")
 	r = r.WithContext(context.WithValue(r.Context(), "provider", provider))
@@ -20,7 +40,7 @@ func Provider(w http.ResponseWriter, r *http.Request) error {
 	if _, err := gothic.CompleteUserAuth(w, r); err != nil {
 		gothic.BeginAuthHandler(w, r)
 	} else {
-		templ.Handler(views.Login(config.Get().GetBaseURL()))
+		templ.Handler(views.Login(config.Get().GetBaseAPIURL()))
 	}
 
 	return nil
@@ -40,7 +60,12 @@ func ProviderCallback(w http.ResponseWriter, r *http.Request) error {
 		return FailedAuthUser()
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("http://localhost:8080/home/%s", user.ID), http.StatusFound)
+	response := CreateResponseDTOFromModel(user)
+	if err = createAuthToken(w, r, response.ToString()); err != nil {
+		return FailedGenerateAuthToken()
+	}
+
+	common.RedirectHomeView(w, r, user.ID.String())
 
 	return nil
 }
@@ -73,7 +98,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	response := CreateResponseDTOFromModel(model)
-	//_, token, _ := auth.GetTokenAuth().Encode(response.ToString())
+	if err = createAuthToken(w, r, response.ToString()); err != nil {
+		return FailedGenerateAuthToken()
+	}
 
 	return common.WriteJSON(w, http.StatusOK, response)
 }
@@ -94,6 +121,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) error {
 		return FailedFind()
 	}
 
+	response := CreateResponseDTOFromModel(model)
+	if err = createAuthToken(w, r, response.ToString()); err != nil {
+		return FailedGenerateAuthToken()
+	}
+
 	return common.WriteJSON(w, http.StatusOK, CreateResponseDTOFromModel(model))
 }
 
@@ -104,8 +136,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) error {
 	}
 	r = r.WithContext(context.WithValue(r.Context(), "provider", ""))
 
-	w.Header().Set("Location", "/")
-	w.WriteHeader(http.StatusTemporaryRedirect)
+	common.RedirectLoginView(w, r)
 
 	return nil
 }

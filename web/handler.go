@@ -13,9 +13,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	templ.Handler(views.Register(config.Get().GetBaseURL())).ServeHTTP(w, r)
+	templ.Handler(views.Register(config.Get().GetBaseAPIURL())).ServeHTTP(w, r)
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	templ.Handler(views.Login(config.Get().GetBaseURL())).ServeHTTP(w, r)
+	templ.Handler(views.Login(config.Get().GetBaseAPIURL())).ServeHTTP(w, r)
 }

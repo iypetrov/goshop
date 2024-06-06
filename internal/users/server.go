@@ -13,7 +13,6 @@ import (
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 	"strings"
 	"sync"
 )
@@ -62,17 +61,17 @@ func (s *Server) InitAuthProviders() {
 		google.New(
 			config.Get().Auth.GoogleClientID,
 			config.Get().Auth.GoogleClientSecret,
-			fmt.Sprintf("%s/auth/google/callback", config.Get().GetBaseURL()),
+			fmt.Sprintf("%s/auth/google/callback", config.Get().GetBaseAPIURL()),
 		),
 		github.New(
 			config.Get().Auth.GithubClientID,
 			config.Get().Auth.GithubClientSecret,
-			fmt.Sprintf("%s/auth/github/callback", config.Get().GetBaseURL()),
+			fmt.Sprintf("%s/auth/github/callback", config.Get().GetBaseAPIURL()),
 		),
 		facebook.New(
 			config.Get().Auth.FacebookClientID,
 			config.Get().Auth.FacebookClientSecret,
-			fmt.Sprintf("%s/auth/facebook/callback", config.Get().GetBaseURL()),
+			fmt.Sprintf("%s/auth/facebook/callback", config.Get().GetBaseAPIURL()),
 		),
 	)
 }
@@ -100,21 +99,6 @@ func (s *Server) Auth(email string, provider string) (Model, error) {
 	}
 
 	return user, nil
-}
-
-func (s *Server) CreateAuthToken(r *http.Request, response map[string]interface{}) error {
-	_, token, err := GetTokenAuth().Encode(response)
-	if err != nil {
-		return err
-	}
-
-	session, err := GetStore().Get(r, "APP_DATA")
-	if err != nil {
-		return err
-	}
-	session.Values["token"] = token
-
-	return nil
 }
 
 func (s *Server) GetModelByID(id string) (Model, error) {

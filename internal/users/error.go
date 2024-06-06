@@ -34,6 +34,13 @@ func FailedFind() common.APIError {
 	}
 }
 
+func FailedGenerateAuthToken() common.APIError {
+	return common.APIError{
+		StatusCode: http.StatusBadRequest,
+		Message:    fmt.Sprint("Failed to generate authentication token"),
+	}
+}
+
 func FailedLogout() common.APIError {
 	return common.APIError{
 		StatusCode: http.StatusBadRequest,

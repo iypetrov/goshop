@@ -92,13 +92,25 @@ func Get() *Config {
 	return config
 }
 
-func (c *Config) GetBaseURL() string {
+func (c *Config) GetBaseAPIURL() string {
 	protocol := "https://"
 	basePath := fmt.Sprintf("%s/api/v%s", c.App.Addr, c.App.Version)
 
 	if c.App.Environment == "dev" {
 		protocol = "http://"
 		basePath = fmt.Sprintf("%s:%s/api/v%s", c.App.Addr, c.App.Port, c.App.Version)
+	}
+
+	return fmt.Sprintf("%s%s", protocol, basePath)
+}
+
+func (c *Config) GetBaseWebURL() string {
+	protocol := "https://"
+	basePath := fmt.Sprintf("%s", c.App.Addr)
+
+	if c.App.Environment == "dev" {
+		protocol = "http://"
+		basePath = fmt.Sprintf("%s:%s", c.App.Addr, c.App.Port)
 	}
 
 	return fmt.Sprintf("%s%s", protocol, basePath)
