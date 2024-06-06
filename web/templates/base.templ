@@ -1,0 +1,19 @@
+package templates
+
+templ Base() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>goshop</title>
+			<script src="../../static/js/htmx.min.js"></script>
+            <link href="../../static/css/tailwind.css" rel="stylesheet"/>
+		</head>
+		<body>
+			<main>
+				{ children... }
+			</main>
+		</body>
+	</html>
+}

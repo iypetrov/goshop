@@ -1,0 +1,9 @@
+package components
+
+import "github.com/iypetrov/goshop/web/templates"
+
+templ BuyButton() {
+    @templates.Base() {
+        <button type="button" class="bg-red-500 rounded-md" hx-post="/api/v0/user">Buy Now</button>
+    }
+}

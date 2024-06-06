@@ -1,0 +1,18 @@
+package views
+
+import (
+    "fmt"
+    "github.com/iypetrov/goshop/web/templates"
+)
+
+templ Register(baseURL string) {
+    {{ googleURL := templ.SafeURL(fmt.Sprintf("%s%s", baseURL, "/auth/google")) }}
+    {{ githubURL := templ.SafeURL(fmt.Sprintf("%s%s", baseURL, "/auth/github")) }}
+    {{ facebookURL := templ.SafeURL(fmt.Sprintf("%s%s", baseURL, "/auth/facebook")) }}
+    @templates.Base() {
+            <p><a href={ googleURL }>Register with Google</a></p>
+            <p><a href={ githubURL }>Register with GitHub</a></p>
+            <p><a href={ facebookURL }>Register with Facebook</a></p>
+    }
+}
+
