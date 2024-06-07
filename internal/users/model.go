@@ -11,6 +11,7 @@ import (
 type Model struct {
 	ID           uuid.UUID
 	Email        string
+	Nickname     string
 	Password     string
 	AuthProvider string
 	UserRole     string
@@ -22,6 +23,7 @@ func CreateModelFromEntity(entity Entity) Model {
 	return Model{
 		ID:           entity.ID,
 		Email:        entity.Email,
+		Nickname:     entity.Nickname,
 		Password:     entity.Password,
 		AuthProvider: entity.AuthProvider,
 		UserRole:     entity.UserRole,
@@ -34,6 +36,7 @@ func CreateModelFromRegisterRequestDTO(requestDTO RegisterRequestDTO) Model {
 	var model Model
 	model.ID = uuid.New()
 	model.Email = requestDTO.Email
+	model.Nickname = requestDTO.Nickname
 	model.Password = requestDTO.Password
 	model.AuthProvider = ConvertToAuthProvider(requestDTO.AuthProvider)
 	model.UserRole = CLIENT
@@ -45,6 +48,7 @@ func CreateModelFromRegisterRequestDTO(requestDTO RegisterRequestDTO) Model {
 func CreateModelFromLoginRequestDTO(requestDTO LoginRequestDTO) Model {
 	var model Model
 	model.Email = requestDTO.Email
+	model.Nickname = requestDTO.Nickname
 	model.Password = requestDTO.Password
 	model.AuthProvider = ConvertToAuthProvider(requestDTO.AuthProvider)
 	return model

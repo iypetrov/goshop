@@ -2,8 +2,11 @@ package components
 
 import "github.com/iypetrov/goshop/web/templates"
 
-templ BuyButton() {
+templ BuyButton(version string) {
     @templates.Base() {
-        <button type="button" class="bg-red-500 rounded-md" hx-post="/api/v0/user">Buy Now</button>
+        <button type="button"
+                class="bg-red-500 rounded-md"
+                hx-get="/health-check">Buy Now
+        </button>
     }
 }

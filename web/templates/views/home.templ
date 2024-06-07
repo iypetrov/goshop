@@ -1,11 +1,13 @@
 package views
 
-import "github.com/iypetrov/goshop/web/templates"
-import "github.com/iypetrov/goshop/web/templates/components"
+import  (
+    "github.com/iypetrov/goshop/web/templates"
+    "github.com/iypetrov/goshop/web/templates/components"
+)
 
-templ Home(userID string) {
+templ Home(baseURL string, userID string) {
    @templates.Base() {
-            <h1>Gosho with id { userID } </h1>
-            @components.BuyButton()
+        <h1>This is the home page of GOSHOP</h1>
+        <p><a href={ templ.SafeURL(fmt.Sprintf("%s%s%s", baseURL, "/user", userID)) }>View your account</a></p>
    }
 }

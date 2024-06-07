@@ -15,6 +15,7 @@ CREATE TYPE user_role AS ENUM (
 CREATE TABLE IF NOT EXISTS "user" (
     id UUID PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
+    nickname VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     auth_provider auth_provider NOT NULL,
     user_role user_role NOT NULL,

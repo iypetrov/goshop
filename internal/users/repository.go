@@ -2,6 +2,8 @@ package users
 
 import (
 	"context"
+	"fmt"
+	"github.com/iypetrov/goshop/internal/common"
 	"log/slog"
 	"sync"
 
@@ -96,4 +98,70 @@ func (r *Repository) CreateEntity(entity Entity) (Entity, error) {
 	}
 
 	return entity, nil
+}
+
+// UpdateEntity Only can update nickname and modified_at
+func (r *Repository) UpdateEntity(entity Entity) (Entity, error) {
+	tx, errTx, cl := common.CreateTx(r.ctx, r.conn)
+	if errTx != nil {
+		slog.Error(errTx.Error())
+		return Entity{}, errTx
+	}
+	defer cl()
+
+	var exists bool
+	err := tx.QueryRow(
+		r.ctx,
+		`SELECT EXISTS(SELECT 1 FROM "user" WHERE id=$1)`,
+		entity.ID,
+	).Scan(&exists)
+	if err != nil {
+		slog.Error(err.Error())
+		return Entity{}, err
+	}
+	if !exists {
+		slog.Error(fmt.Sprintf("user with id %s does not exist", entity.ID))
+		return Entity{}, err
+	}
+
+	var updatedEntity Entity
+	err = tx.QueryRow(
+		r.ctx,
+		`UPDATE "user" 
+		SET nickname=$1, modified_at=$2 
+		WHERE id=$3 
+		RETURNING id, email, password, auth_provider, user_role, created_at, modified_at`,
+		entity.Nickname,
+		entity.ModifiedAt,
+		entity.ID,
+	).Scan(
+		&updatedEntity.ID,
+		&updatedEntity.Email,
+		&updatedEntity.Nickname,
+		&updatedEntity.Password,
+		&updatedEntity.AuthProvider,
+		&updatedEntity.UserRole,
+		&updatedEntity.CreatedAt,
+		&updatedEntity.ModifiedAt,
+	)
+	if err != nil {
+		slog.Error(err.Error())
+		return Entity{}, err
+	}
+
+	return updatedEntity, nil
+}
+
+func (r *Repository) DeleteEntity(id uuid.UUID) error {
+	_, err := r.conn.Exec(
+		r.ctx,
+		`DELETE FROM "user" WHERE id=$1`,
+		id,
+	)
+	if err != nil {
+		slog.Error(err.Error())
+		return err
+	}
+
+	return nil
 }

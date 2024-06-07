@@ -14,16 +14,15 @@ import (
 )
 
 func createAuthToken(w http.ResponseWriter, r *http.Request, response map[string]interface{}) error {
-	_, token, err := GetTokenAuth().Encode(response)
+	_, token, err := config.Get().Auth.TokenAuth.Encode(response)
 	if err != nil {
 		return err
 	}
 
-	session, err := GetStore().Get(r, "AUTH_SESSION")
+	session, err := config.Get().Auth.Store.Get(r, common.CookieName)
 	if err != nil {
 		return err
 	}
-
 	session.Values["token"] = token
 
 	if err := session.Save(r, w); err != nil {
@@ -65,7 +64,7 @@ func ProviderCallback(w http.ResponseWriter, r *http.Request) error {
 		return FailedGenerateAuthToken()
 	}
 
-	common.RedirectHomeView(w, r, user.ID.String())
+	common.RedirectHomeView(w, r)
 
 	return nil
 }

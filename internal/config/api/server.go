@@ -56,22 +56,21 @@ func (s *Server) RegisterRoutes() *chi.Mux {
 		})
 		// Private Routes
 		r.Group(func(r chi.Router) {
-			r.Use(jwtauth.Verifier(users.GetTokenAuth()))
-			r.Use(jwtauth.Authenticator(users.GetTokenAuth()))
+			r.Use(jwtauth.Verifier(config.Get().Auth.TokenAuth))
+			r.Use(users.PrivateAuthenticator())
 			r.Mount("/users", users.Router())
 
 		})
 		// Admin Routes
 		r.Group(func(r chi.Router) {
-			r.Use(jwtauth.Verifier(users.GetTokenAuth()))
-			r.Use(jwtauth.Authenticator(users.GetTokenAuth()))
+			r.Use(jwtauth.Verifier(config.Get().Auth.TokenAuth))
 			r.Use(users.AdminAuthenticator())
 			r.Mount("/admin/users", users.AdminRouter())
 		})
 	})
 
 	r.Get("/health-check", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNotFound)
 		_, err := w.Write([]byte{})
 		if err != nil {
 			return

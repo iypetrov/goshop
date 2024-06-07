@@ -1,0 +1,13 @@
+package views
+
+import (
+    "fmt"
+    "github.com/iypetrov/goshop/web/templates"
+)
+
+templ NotFound(baseURL string, userID string) {
+   {{ fmt.Println(baseURL) }}
+   @templates.Base() {
+        <p><a href={ templ.SafeURL(fmt.Sprintf("%s%s/%s", baseURL, "/home", userID)) }>Page not found, go back</a></p>
+   }
+}

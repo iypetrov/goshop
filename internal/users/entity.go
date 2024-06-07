@@ -8,6 +8,7 @@ import (
 type Entity struct {
 	ID           uuid.UUID `db:"id"`
 	Email        string    `db:"email"`
+	Nickname     string    `db:"nickname"`
 	Password     string    `db:"password"`
 	AuthProvider string    `db:"auth_provider"`
 	UserRole     string    `db:"user_role"`
@@ -19,6 +20,7 @@ func CreateEntityFromModel(model Model) Entity {
 	return Entity{
 		ID:           model.ID,
 		Email:        model.Email,
+		Nickname:     model.Nickname,
 		Password:     model.Password,
 		AuthProvider: model.AuthProvider,
 		UserRole:     model.UserRole,
